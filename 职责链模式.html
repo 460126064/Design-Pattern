@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>职责连模式</title>
+</head>
+<body>
+	<script type="text/javascript">
+		/*
+		 * @constructor 职责链模式
+		 * @param {Function}
+		 */ 
+		function Dutymode(fn) {
+			this.fn = fn;
+			this.next = null;
+		}
+		Dutymode.prototype = {
+			constructor: Dutymode,
+			isFunction(fn) {
+				return typeof fn === 'function'
+			},
+			isInstance() {
+				return this instanceof Dutymode;
+			},
+			setNext(nextsuccess) {
+				if(this.isFunction(nextsuccess)){
+					console.warn('setNext param must be function');
+					return
+				}
+				return this.next = nextsuccess;
+			},
+			exec() {
+				let res = this.fn.apply(this,arguments);
+				if(res !== 'next') {
+					return res;
+				}
+				this.next && this.next.exec.apply(this.next,arguments);
+			}
+		}
+		/*
+		 * @constructor 由观察者模式衍生职责链模式
+		 * @param {Function}
+		 */ 
+		function queue() {
+			let list = [];
+			return {
+				add(fn) {
+					list.push(fn)
+					return this;
+				},
+				fire() {
+					//原始for循环，效率比forEach高
+					for(let i = 0; i < list.length; i++) {
+						let res = list[i].apply(this,arguments);
+						if(res !== 'next') {
+							return res;
+						}
+					}
+				}
+			}
+		}	
+	</script>
+</body>
+</html>
